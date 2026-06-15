@@ -1,0 +1,113 @@
+{
+  "$schema": "https://skill-manager.example/schemas/environment-v2.0.json",
+  "version": "2.0",
+  "description": "Skill Manager 运行环境配置",
+
+  "runtime": {
+    "language": "node",
+    "version": ">=18",
+    "entryPoint": "server.js",
+    "startupCommand": "npm start",
+    "devCommand": "npm run dev"
+  },
+
+  "dependencies": {
+    "production": [
+      "express"
+    ],
+    "development": [
+      "jest",
+      "jest-mock-extended",
+      "supertest",
+      "husky"
+    ],
+    "installCommand": "npm install"
+  },
+
+  "services": {
+    "required": [],
+    "optional": []
+  },
+
+  "environmentVariables": {
+    "required": [],
+    "optional": [
+      {
+        "name": "PORT",
+        "description": "服务器端口",
+        "default": "3456"
+      },
+      {
+        "name": "SKILLS_DIR",
+        "description": "逗号分隔的 skill 目录",
+        "default": "来自 tools.json"
+      },
+      {
+        "name": "EXCLUDE_PROJECTS",
+        "description": "扫描时跳过的项目",
+        "default": "来自 tools.json"
+      }
+    ]
+  },
+
+  "tests": {
+    "command": "npm test",
+    "coverageCommand": "npm run test:coverage",
+    "coverageThreshold": {
+      "branches": 80,
+      "functions": 80,
+      "lines": 80,
+      "statements": 80
+    },
+    "testFiles": [
+      "__tests__/**/*.test.js"
+    ]
+  },
+
+  "build": {
+    "command": "无需构建（Node.js 直接运行）",
+    "outputDir": null
+  },
+
+  "lint": {
+    "architecture": {
+      "command": "node scripts/lint-deps.js",
+      "description": "检查层级架构依赖规则"
+    }
+  },
+
+  "ci": {
+    "steps": [
+      "npm install",
+      "node scripts/lint-deps.js",
+      "npm test"
+    ]
+  },
+
+  "deployment": {
+    "type": "pm2",
+    "configFile": "ecosystem.config.cjs",
+    "commands": {
+      "start": "pm2 start ecosystem.config.cjs",
+      "stop": "pm2 stop skill-manager",
+      "logs": "pm2 logs skill-manager"
+    }
+  },
+
+  "configFiles": {
+    "main": "tools.json",
+    "template": "tools.example.json",
+    "watch": true,
+    "watchDebounceMs": 300
+  },
+
+  "fileWatch": {
+    "enabled": true,
+    "watcher": "node --watch",
+    "files": [
+      "app.js",
+      "lib/**/*.js",
+      "tools.json"
+    ]
+  }
+}
